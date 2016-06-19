@@ -7,6 +7,9 @@
 
 namespace IntZone\MathZ;
 
+use DomainException;
+use InvalidArgumentException;
+
 /**
  * Magic square constructor
  *
@@ -152,6 +155,7 @@ class MagicSquare
      * Create n x n magic square where n = 4m, m being a positive integer
      *
      * @param  int $n
+     * @throws InvalidArgumentException if n is not a positive integer
      * @throws InvalidArgumentException if n is not a multiple of 4
      * @return array [[<row 1 column 1>, <row 1 column 2>], [<row 2 column 1>, <row 2 column 2]]
      */
