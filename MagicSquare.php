@@ -43,11 +43,20 @@ class MagicSquare
             ],
             */
 
-            '4p' => [
+            'doublyEven' => [
                 'test' => function ($n) { return (0 === $n % 4); },
                 'computeWidth' => function ($cellCount) { return (int) (ceil(sqrt($cellCount) / 4) * 4); },
-                'generator' => 'generate4p',
+                'generator' => 'generateDoublyEven',
             ],
+
+            /*
+            'singlyEven' => [
+                'test' => function ($n) { return (($n - 2) % 4 >= 1); },
+                // @todo
+                'computeWidth' => function ($cellCount) { return -1; },
+                'generator' => 'generateSinglyEven',
+            ],
+            */
         ];
     }
 
@@ -79,8 +88,12 @@ class MagicSquare
     /**
      * Create n x n magic square with numbers 1 to n
      *
+     * Note that there is no solution for n = 2.
+     * No further assertions or tests will be done in the individual generators as they are already done here.
+     *
      * @param  int $n
      * @throws InvalidArgumentException if n is not a positive integer
+     * @throws DomainException if n is 2
      * @throws DomainException if unable to generate for n
      * @return array
      *         [   // Example of result for 3x3 square
@@ -92,6 +105,10 @@ class MagicSquare
     public function generate($n)
     {
         $this->assertPositiveInteger($n);
+
+        if (2 === $n) {
+            throw new DomainException("There is no solution for n = 2");
+        }
 
         foreach ($this->orders as $order) {
             $testFn = $order['test'];
@@ -213,21 +230,31 @@ class MagicSquare
     }
 
     /**
-     * Create n x n magic square where n = 4p, p being a positive integer
+     * Create n x n magic square where n is odd, ie. n = 2p + 1, p being a positive integer
      *
+     * Uses Siamese method.
+     *
+     * @todo   Not implemented yet
+     * @link   https://en.wikipedia.org/wiki/Siamese_method
      * @param  int $n
-     * @throws InvalidArgumentException if n is not a positive integer
-     * @throws InvalidArgumentException if n is not a multiple of 4
      * @return array @see result for generate()
      */
-    protected function generate4p($n)
+    protected function generateOdd($n)
     {
-        $this->assertPositiveInteger($n);
+        return [];
+    }
 
-        if ($n % 4 !== 0) {
-            throw new InvalidArgumentException("{$n} is not a multiple of 4");
-        }
-
+    /**
+     * Create n x n magic square where n is doubly even, ie. n = 4p, p being a positive integer
+     *
+     * Uses Albrecht Dürer's method.
+     *
+     * @link   https://en.wikipedia.org/wiki/Magic_square
+     * @param  int $n
+     * @return array @see result for generate()
+     */
+    protected function generateDoublyEven($n)
+    {
         // Base grid for 4 x 4
         $baseGrid = [
             [0, 1, 1, 0],
@@ -273,5 +300,21 @@ class MagicSquare
         }
 
         return $result;
+    }
+
+    /**
+     * Create n x n magic square where n is singly even, ie. n = 4p + 2, p being a positive integer
+     *
+     * n is not defined as n = 2p as there is no solution for n = 2 with p = 1.
+     * Uses Conway's LUX method.
+     *
+     * @todo   Not implemented yet
+     * @link   https://en.wikipedia.org/wiki/Conway%27s_LUX_method_for_magic_squares
+     * @param  int $n
+     * @return array @see result for generate()
+     */
+    protected function generateSinglyEven($n)
+    {
+        return [];
     }
 }
