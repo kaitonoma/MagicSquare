@@ -13,7 +13,7 @@ use InvalidArgumentException;
 /**
  * Magic square constructor
  *
- * @todo Only order 4m supported for now
+ * @todo Only order 4p supported for now
  */
 class MagicSquare
 {
@@ -43,10 +43,10 @@ class MagicSquare
             ],
             */
 
-            '4m' => [
+            '4p' => [
                 'test' => function ($n) { return (0 === $n % 4); },
                 'computeWidth' => function ($cellCount) { return (int) (ceil(sqrt($cellCount) / 4) * 4); },
-                'generator' => 'generate4m',
+                'generator' => 'generate4p',
             ],
         ];
     }
@@ -54,7 +54,7 @@ class MagicSquare
     /**
      * Compute minimum width of magic square needed to contain a number of cells
      *
-     * A cell may contain a character, number, word, etc. A 4x4 magic square consists of 16 cells.
+     * A cell may contain a character, number, word, etc. A 4x4 magic square consists of 16 cells
      * This goes thru all the supported orders, compute the respective widths and finds the smallest.
      *
      * @param  int $cellCount
@@ -100,16 +100,72 @@ class MagicSquare
     }
 
     /**
+     * Compute sum of n x n magic square
+     *
+     * @param  int $n
+     * @return int
+     */
+    public function computeSum($n)
+    {
+        $this->assertPositiveInteger($n);
+
+        return ($n / 2) * (pow($n, 2) + 1);
+    }
+
+    /**
+     * Check if magic square is valid
+     *
+     * All rows must yield the same sum.
+     * All columns must yield the same sum.
+     * Both diagonals must yield the same sum.
+     *
+     * @param  array $magicSquare @see result for generate()
+     * @return bool
+     */
+    public function isValid(array $magicSquare)
+    {
+        $n = count($magicSquare);
+        if (0 === $n) {
+            return false;
+        }
+
+        // Sums
+        $sum = $this->computeSum($n);
+        $sums = array_fill(0, $n, $sum);
+        $rowSums = array_map('array_sum', $magicSquare);
+        $columnSums = [];
+        $diagonals = [[], []]; // 1st diagonal from top-left to bottom-right, 2nd from bottom-left to top-right
+        $diagonalSums = [];
+
+        for ($col = 0; $col < $n; $col++) {
+            // array_column can be used if PHP >= 5.5
+            $columnSums[] = array_sum(array_map(function ($row) use ($col) { return $row[$col]; }, $magicSquare));
+
+            $diagonals[0][] = $magicSquare[$col][$col];
+            $diagonals[1][] = $magicSquare[$n - $col - 1][$col];
+        }
+        $diagonalSums = array_map('array_sum', $diagonals);
+
+        $result = ($rowSums === $sums) && ($columnSums === $sums)
+               && ($sum === $diagonalSums[0]) && ($sum === $diagonalSums[1]);
+
+        return $result;
+    }
+
+    /**
      * Render magic square as HTML table
      *
-     * @param  array  $magicSquare     Result of generate()
+     * @param  array  $magicSquare     @see result for generate()
      * @param  bool   $useDefaultStyle Whether to use default CSS styling for table
      * @param  string $tableClass      Optional CSS class for HTML table
-     * @return string
+     * @return string Empty string returned if magic square is empty
      */
     public function render(array $magicSquare, $useDefaultStyle = true, $tableClass = '')
     {
         $n = count($magicSquare);
+        if (0 === $n) {
+            return '';
+        }
 
         $tableStyle = $useDefaultStyle ? 'border-collapse:collapse; border-spacing:0;' : '';
         $tdStyle = $useDefaultStyle
@@ -152,14 +208,14 @@ class MagicSquare
     }
 
     /**
-     * Create n x n magic square where n = 4m, m being a positive integer
+     * Create n x n magic square where n = 4p, p being a positive integer
      *
      * @param  int $n
      * @throws InvalidArgumentException if n is not a positive integer
      * @throws InvalidArgumentException if n is not a multiple of 4
-     * @return array [[<row 1 column 1>, <row 1 column 2>], [<row 2 column 1>, <row 2 column 2]]
+     * @return array @see result for generate()
      */
-    protected function generate4m($n)
+    protected function generate4p($n)
     {
         $this->assertPositiveInteger($n);
 
@@ -167,6 +223,7 @@ class MagicSquare
             throw new InvalidArgumentException("{$n} is not a multiple of 4");
         }
 
+        // Base grid for 4 x 4
         $baseGrid = [
             [0, 1, 1, 0],
             [1, 0, 0, 1],
@@ -174,6 +231,7 @@ class MagicSquare
             [0, 1, 1, 0],
         ];
 
+        // Step 1: Expand base grid to n x n
         $grid = [];
         for ($row = 0; $row < $n; $row++) {
             for ($col = 0; $col < $n; $col++) {
@@ -183,7 +241,7 @@ class MagicSquare
 
         $result = [];
 
-        // Step 1: Counting from 1 to n, go from FIRST cell (topmost left), left to right, top to bottom
+        // Step 2: Counting from 1 to n, go from FIRST cell (topmost left), left to right, top to bottom
         //         and fill up the cells where grid indicates '1'.
         $i = 0;
         for ($row = 0; $row < $n; $row++) {
@@ -196,7 +254,7 @@ class MagicSquare
             }
         }
 
-        // Step 2: Counting from 1 to n, go from LAST cell (bottommost right), right to left, bottom to top
+        // Step 3: Counting from 1 to n, go from LAST cell (bottommost right), right to left, bottom to top
         //         and fill up the cells where grid indicates '0'.
         $i = 0;
         for ($row = ($n - 1); $row >= 0; $row--) {
