@@ -18,7 +18,7 @@ use InvalidArgumentException;
 class MagicSquare
 {
     /**
-     * Supported orders of magic squares
+     * Supported orders of magic squares - to be init in constructor
      *
      * @var array
      */
@@ -36,8 +36,8 @@ class MagicSquare
             'odd' => [
                 'test' => function ($n) { return (1 === $n % 2); },
                 'computeWidth' => function ($cellCount) {
-                    $sqrt = (int) ceil(sqrt($cellCount));
-                    return $sqrt + (0 === $sqrt % 2 ? 1 : 0);
+                    $min = (int) ceil(sqrt($cellCount));
+                    return $min + (0 === $min % 2 ? 1 : 0);
                 },
                 'generator' => 'generateOdd',
             ],
@@ -45,15 +45,20 @@ class MagicSquare
 
             'doublyEven' => [
                 'test' => function ($n) { return (0 === $n % 4); },
-                'computeWidth' => function ($cellCount) { return (int) (ceil(sqrt($cellCount) / 4) * 4); },
+                'computeWidth' => function ($cellCount) {
+                    $min = (int) ceil(sqrt($cellCount));
+                    return (int) (ceil($min / 4) * 4);
+                },
                 'generator' => 'generateDoublyEven',
             ],
 
             /*
             'singlyEven' => [
-                'test' => function ($n) { return (($n - 2) % 4 >= 1); },
-                // @todo
-                'computeWidth' => function ($cellCount) { return -1; },
+                'test' => function ($n) { return (0 === ($n - 2) % 4); },
+                'computeWidth' => function ($cellCount) {
+                    $min = (int) ceil(sqrt($cellCount));
+                    return (int) (ceil(($min - 2) / 4) * 4) + 2;
+                },
                 'generator' => 'generateSinglyEven',
             ],
             */
