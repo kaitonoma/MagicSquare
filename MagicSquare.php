@@ -54,7 +54,7 @@ class MagicSquare
     /**
      * Compute minimum width of magic square needed to contain a number of cells
      *
-     * A cell may contain a character, number, word, etc. A 4x4 magic square consists of 16 cells
+     * A cell may contain a character, number, word, etc. A 4x4 magic square consists of 16 cells.
      * This goes thru all the supported orders, compute the respective widths and finds the smallest.
      *
      * @param  int $cellCount
@@ -82,7 +82,12 @@ class MagicSquare
      * @param  int $n
      * @throws InvalidArgumentException if n is not a positive integer
      * @throws DomainException if unable to generate for n
-     * @return array [[<row 1 column 1>, <row 1 column 2>], [<row 2 column 1>, <row 2 column 2]]
+     * @return array
+     *         [   // Example of result for 3x3 square
+     *             [<row 1 col 1>, <row 1 col 2>, <row 1 col 3>],
+     *             [<row 2 col 1>, <row 2 col 2>, <row 2 col 3>],
+     *             [<row 3 col 1>, <row 3 col 2>, <row 3 col 3>],
+     *         ]
      */
     public function generate($n)
     {
