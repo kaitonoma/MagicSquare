@@ -69,7 +69,7 @@ class MagicSquare
      * Compute minimum width of magic square needed to contain a number of cells
      *
      * A cell may contain a character, number, word, etc. A 4x4 magic square consists of 16 cells.
-     * This goes thru all the supported orders, compute the respective widths and finds the smallest.
+     * This goes thru all the supported orders, computes the respective widths and finds the smallest.
      *
      * @param  int $cellCount
      * @throws InvalidArgumentException if $cellCount is not a positive integer
