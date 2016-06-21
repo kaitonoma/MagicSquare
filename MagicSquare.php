@@ -13,7 +13,7 @@ use InvalidArgumentException;
 /**
  * Magic square constructor
  *
- * @todo Only order 4p supported for now
+ * @todo Implement singly even generator
  */
 class MagicSquare
 {
@@ -32,7 +32,6 @@ class MagicSquare
     public function __construct()
     {
         $this->orders = [
-            /*
             'odd' => [
                 'test' => function ($n) { return (1 === $n % 2); },
                 'computeWidth' => function ($cellCount) {
@@ -41,7 +40,6 @@ class MagicSquare
                 },
                 'generator' => 'generateOdd',
             ],
-            */
 
             'doublyEven' => [
                 'test' => function ($n) { return (0 === $n % 4); },
@@ -115,11 +113,15 @@ class MagicSquare
             throw new DomainException("There is no solution for n = 2");
         }
 
-        foreach ($this->orders as $order) {
+        // In general, the orders here are mutually exclusive, ie. there is no $n where 2 orders may be used,
+        // hence there is no need to find the smallest width among compatible orders and use that order
+        foreach ($this->orders as $name => $order) {
             $testFn = $order['test'];
             if (is_callable($testFn) && $testFn($n)) {
                 $generator = $order['generator'];
-                return $this->$generator($n);
+                if (is_callable(array($this, $generator))) {
+                    return $this->$generator($n);
+                }
             }
         }
 
@@ -239,14 +241,32 @@ class MagicSquare
      *
      * Uses Siamese method.
      *
-     * @todo   Not implemented yet
      * @link   https://en.wikipedia.org/wiki/Siamese_method
      * @param  int $n
      * @return array @see result for generate()
      */
     protected function generateOdd($n)
     {
-        return [];
+        $result = array_fill(0, $n, array_fill(0, $n, ''));
+
+        $i = 0;
+        $max = $n * $n;
+        $row = 0;
+        $col = (int) floor($n / 2);
+
+        do {
+            $i++;
+            $result[$row][$col] = $i;
+
+            $nextRow = ($row - 1 + $n) % $n;
+            $nextCol = ($col + 1) % $n;
+            $isNextCellEmpty = ('' === $result[$nextRow][$nextCol]);
+
+            $row = $isNextCellEmpty ? $nextRow : (($row + 1) % $n);
+            $col = $isNextCellEmpty ? $nextCol : $col;
+        } while ($i < $max);
+
+        return $result;
     }
 
     /**
