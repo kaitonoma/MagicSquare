@@ -1,0 +1,12 @@
+{
+  "name": "zionsg/magic-square",
+  "homepage": "https://github.com/zionsg/MagicSquare",
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "IntZone\\MathZ\\": "src"
+    }
+  }
+}

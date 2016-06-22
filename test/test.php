@@ -1,5 +1,5 @@
 <?php
-include 'MagicSquare.php';
+include '../src/IntZone/MathZ/MagicSquare.php';
 
 $magicSquare = new IntZone\MathZ\MagicSquare();
 $n = 8;
