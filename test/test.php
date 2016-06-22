@@ -1,7 +1,7 @@
 <?php
-include '../src/IntZone/MathZ/MagicSquare.php';
+include '../src/Intzone/Math/MagicSquare.php';
 
-$magicSquare = new IntZone\MathZ\MagicSquare();
+$magicSquare = new Intzone\Math\MagicSquare();
 $n = 8;
 
 try {

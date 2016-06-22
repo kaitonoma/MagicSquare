@@ -5,7 +5,7 @@
  * @since  2016-06-19T20:00+08:00
  */
 
-namespace IntZone\MathZ;
+namespace Intzone\Math;
 
 use DomainException;
 use InvalidArgumentException;
